@@ -2,6 +2,7 @@
 
 
 #include "MovingPlatform.h"
+#include "DrawDebugHelpers.h"
 
 
 AMovingPlatform::AMovingPlatform() {
@@ -17,7 +18,15 @@ void AMovingPlatform::BeginPlay()
     EndLocation = GetActorTransform().TransformPosition(EndLocationOffset);
     TargetLocation = EndLocation;
     BeginLocation = StartLocation;
-    TargetLocations.EmplaceAt(0, BeginLocation);
+    TargetLocations.Insert(FVector(0), 0);
+    // for (FVector Location : TargetLocations) {
+    //     Location += GetActorLocation();
+    // }
+    for (int32 i = 0; i < TargetLocations.Num(); i++)
+    {
+        TargetLocations[i] += GetActorLocation();
+    }
+    
     UpdateJourneyLength();
 
     if (HasAuthority()) {
@@ -28,24 +37,39 @@ void AMovingPlatform::BeginPlay()
 
 void AMovingPlatform::Turn() 
 {
-    TargetLocation = TargetLocation == EndLocation ? StartLocation : EndLocation;
-    BeginLocation = BeginLocation == EndLocation ? StartLocation : EndLocation;
+    if (Index + 1 > TargetLocations.Num() - 1) {
+        Index = 0;
+    }
+    else {
+        Index++;
+    }
     UpdateJourneyLength();
 }
 
 void AMovingPlatform::Move(float DeltaTime) 
 {
-    float JourneyTravelled = FVector::DistSquared(GetActorLocation(), BeginLocation);
+
+    for (FVector Location : TargetLocations) {
+        DrawDebugSphere(GetWorld(), Location, 50.f, 16, FColor::Red, false, 0.f, 0.f, 50.f);
+    }
+
+    if (TargetLocations.Num() <= 1) return;
+    float JourneyTravelled = FVector::DistSquared(GetActorLocation(), TargetLocations[IndexMinusOne()]);
     
     if (JourneyTravelled >= JourneyLength) {
         Turn();
     }
-    SetActorLocation(GetActorLocation() + (TargetLocation - GetActorLocation()).GetSafeNormal() * Speed * DeltaTime);
+    SetActorLocation(GetActorLocation() + (TargetLocations[Index] - GetActorLocation()).GetSafeNormal() * Speed * DeltaTime);
+}
+
+int32 AMovingPlatform::IndexMinusOne() 
+{
+    return Index - 1 < 0 ? TargetLocations.Num() - 1 : Index - 1;
 }
 
 void AMovingPlatform::UpdateJourneyLength() 
 {
-    JourneyLength = FVector::DistSquared(TargetLocation, BeginLocation);
+    JourneyLength = FVector::DistSquared(TargetLocations[IndexMinusOne()], TargetLocations[Index]);
 }
 
 void AMovingPlatform::Tick(float DeltaTime) 

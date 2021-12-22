@@ -31,7 +31,8 @@ private:
 	FVector BeginLocation = FVector(0);
 	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true))
 	TArray<FVector> TargetLocations;
-	int32 index = 1;
+	int32 Index = 0;
+	int32 IndexMinusOne();
 	FVector StartLocation = FVector(0);
 	float JourneyLength;
 	void UpdateJourneyLength();
