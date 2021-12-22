@@ -14,10 +14,6 @@ void AMovingPlatform::BeginPlay()
 {
     Super::BeginPlay();
 
-    StartLocation = GetActorLocation();
-    EndLocation = GetActorTransform().TransformPosition(EndLocationOffset);
-    TargetLocation = EndLocation;
-    BeginLocation = StartLocation;
     TargetLocations.Insert(FVector(0), 0);
     // for (FVector Location : TargetLocations) {
     //     Location += GetActorLocation();
@@ -48,11 +44,7 @@ void AMovingPlatform::Turn()
 
 void AMovingPlatform::Move(float DeltaTime) 
 {
-
-    for (FVector Location : TargetLocations) {
-        DrawDebugSphere(GetWorld(), Location, 50.f, 16, FColor::Red, false, 0.f, 0.f, 50.f);
-    }
-
+    if (TriggersTriggering <= 0 && NumberOfTriggers > 0) return;
     if (TargetLocations.Num() <= 1) return;
     float JourneyTravelled = FVector::DistSquared(GetActorLocation(), TargetLocations[IndexMinusOne()]);
     
@@ -70,6 +62,17 @@ int32 AMovingPlatform::IndexMinusOne()
 void AMovingPlatform::UpdateJourneyLength() 
 {
     JourneyLength = FVector::DistSquared(TargetLocations[IndexMinusOne()], TargetLocations[Index]);
+}
+
+void AMovingPlatform::Trigger(bool Move) 
+{
+    if (Move) TriggersTriggering++;
+    else if (TriggersTriggering > 0) TriggersTriggering--;
+}
+
+void AMovingPlatform::AddActiveTrigger() 
+{
+    NumberOfTriggers++;
 }
 
 void AMovingPlatform::Tick(float DeltaTime) 

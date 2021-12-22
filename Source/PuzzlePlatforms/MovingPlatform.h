@@ -20,15 +20,12 @@ public:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Speed = 100.f;
+	void Trigger(bool Move);
+	void AddActiveTrigger();
 
 private:
 	void Turn();
 	void Move(float DeltaTime);
-	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true)) 
-	FVector EndLocationOffset = FVector(500, 0, 0);
-	FVector EndLocation = FVector(0);
-	FVector TargetLocation = FVector(0);
-	FVector BeginLocation = FVector(0);
 	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true))
 	TArray<FVector> TargetLocations;
 	int32 Index = 0;
@@ -37,6 +34,8 @@ private:
 	float JourneyLength;
 	void UpdateJourneyLength();
 
+	int32 NumberOfTriggers = 0;
+	int32 TriggersTriggering = 0;
 
 	
 };
