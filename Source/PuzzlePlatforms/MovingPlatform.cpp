@@ -12,7 +12,13 @@ AMovingPlatform::AMovingPlatform() {
 void AMovingPlatform::BeginPlay() 
 {
     Super::BeginPlay();
-    InitialLocation = GetActorLocation();
+
+    StartLocation = GetActorLocation();
+    EndLocation = GetActorTransform().TransformPosition(EndLocationOffset);
+    TargetLocation = EndLocation;
+    BeginLocation = StartLocation;
+    TargetLocations.EmplaceAt(0, BeginLocation);
+    UpdateJourneyLength();
 
     if (HasAuthority()) {
         SetReplicates(true);
@@ -22,15 +28,24 @@ void AMovingPlatform::BeginPlay()
 
 void AMovingPlatform::Turn() 
 {
-    Speed = -Speed;
+    TargetLocation = TargetLocation == EndLocation ? StartLocation : EndLocation;
+    BeginLocation = BeginLocation == EndLocation ? StartLocation : EndLocation;
+    UpdateJourneyLength();
 }
 
 void AMovingPlatform::Move(float DeltaTime) 
 {
-    if ((GetActorLocation() - InitialLocation).X >= 500 || (GetActorLocation() - InitialLocation).X <= -500) {
+    float JourneyTravelled = FVector::DistSquared(GetActorLocation(), BeginLocation);
+    
+    if (JourneyTravelled >= JourneyLength) {
         Turn();
     }
-    SetActorLocation(GetActorLocation() + (FVector(Speed, 0, 0) * DeltaTime));
+    SetActorLocation(GetActorLocation() + (TargetLocation - GetActorLocation()).GetSafeNormal() * Speed * DeltaTime);
+}
+
+void AMovingPlatform::UpdateJourneyLength() 
+{
+    JourneyLength = FVector::DistSquared(TargetLocation, BeginLocation);
 }
 
 void AMovingPlatform::Tick(float DeltaTime) 

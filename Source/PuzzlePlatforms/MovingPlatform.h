@@ -22,9 +22,20 @@ public:
 	float Speed = 100.f;
 
 private:
-	FVector InitialLocation = FVector(0);
 	void Turn();
 	void Move(float DeltaTime);
+	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true)) 
+	FVector EndLocationOffset = FVector(500, 0, 0);
+	FVector EndLocation = FVector(0);
+	FVector TargetLocation = FVector(0);
+	FVector BeginLocation = FVector(0);
+	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true))
+	TArray<FVector> TargetLocations;
+	int32 index = 1;
+	FVector StartLocation = FVector(0);
+	float JourneyLength;
+	void UpdateJourneyLength();
+
 
 	
 };
