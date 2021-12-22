@@ -1,1 +1,2 @@
-Content/Static/** filter=lfs diff=lfs merge=lfs -text
+Content/PuzzlePlatforms/Static/** filter=lfs diff=lfs merge=lfs -text
+Content/MenuSystem/Static/** filter=lfs diff=lfs merge=lfs -text
