@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "MenuWidget.h"
 #include "MenuInterface.h"
 #include "GameMenuWidget.generated.h"
 
@@ -11,14 +11,12 @@
  * 
  */
 UCLASS()
-class PUZZLEPLATFORMS_API UGameMenuWidget : public UUserWidget
+class PUZZLEPLATFORMS_API UGameMenuWidget : public UMenuWidget
 {
 	GENERATED_BODY()
 
 public:
 	virtual bool Initialize() override;
-	void SetMenuInterface(IMenuInterface* MenuInterfaceToSet);
-	void Setup();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -30,7 +28,5 @@ private:
 	void QuitGame();
 	UFUNCTION()
 	void CancelQuit();
-
-	IMenuInterface* MenuInterface = nullptr;
 	
 };

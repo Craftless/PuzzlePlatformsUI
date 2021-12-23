@@ -19,45 +19,13 @@ bool UGameMenuWidget::Initialize()
     return true;
 }
 
-void UGameMenuWidget::SetMenuInterface(IMenuInterface* MenuInterfaceToSet) 
-{
-    MenuInterface = MenuInterfaceToSet;
-}
 
 void UGameMenuWidget::QuitGame() 
 {
     MenuInterface -> Quit();
 }
 
-
-void UGameMenuWidget::Setup() 
-{
-    AddToViewport();
-    bIsFocusable = true;
-
-
-    APlayerController* PlayerController = GetWorld() -> GetFirstPlayerController();
-    if (!ensure(PlayerController)) return;
-    FInputModeUIOnly InputModeData;
-    InputModeData.SetWidgetToFocus(this -> TakeWidget());
-    InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-    PlayerController -> SetInputMode(InputModeData);
-    PlayerController -> bShowMouseCursor = true;
-}
-
 void UGameMenuWidget::CancelQuit() 
 {
-    RemoveFromViewport();
-
-    bIsFocusable = false;
-
-
-    APlayerController* PlayerController = GetWorld() -> GetFirstPlayerController();
-    if (!ensure(PlayerController)) return;
-    FInputModeGameOnly InputModeData;
-
-    PlayerController -> SetInputMode(InputModeData);
-    PlayerController -> bShowMouseCursor = false;
+    Teardown();
 }
-
